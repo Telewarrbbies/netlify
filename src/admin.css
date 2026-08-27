@@ -1,0 +1,79 @@
+.admin-layout{
+  display:flex;
+  min-height:100vh;
+  background:#0f172a;
+}
+
+.admin-sidebar{
+  width:260px;
+  background:#020617;
+  padding:30px;
+}
+
+.admin-sidebar h2{
+  color:#38bdf8;
+}
+
+.admin-sidebar nav{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-top:30px;
+}
+
+.admin-sidebar a{
+  color:white;
+  text-decoration:none;
+}
+
+.admin-main{
+  flex:1;
+  padding:40px;
+}
+
+.dashboard-cards{
+  display:grid;
+  grid-template-columns:
+  repeat(auto-fit,minmax(220px,1fr));
+
+  gap:20px;
+}
+
+.stat-card{
+  background:#111827;
+  padding:25px;
+  border-radius:20px;
+}
+
+.stat-card span{
+  font-size:32px;
+  color:#38bdf8;
+}
+
+.login-card{
+  width:400px;
+  margin:100px auto;
+  padding:40px;
+  background:#111827;
+  border-radius:20px;
+}
+
+.login-card form{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.login-card input{
+  padding:14px;
+  border:none;
+  border-radius:10px;
+}
+
+.login-card button{
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#38bdf8;
+}
