@@ -141,6 +141,12 @@ const Blog = () => {
 
   const [blogs, setBlogs] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
+  const [loadingSeconds, setLoadingSeconds] = useState(0);
+
+  const [retryCount, setRetryCount] = useState(0);
+
   const [selectedBlog, setSelectedBlog] = useState(null);
 
   const [searchParams] = useSearchParams();
@@ -159,7 +165,25 @@ const Blog = () => {
 
   useEffect(() => {
 
+    if (!loading) {
+      return undefined;
+    }
+
+    const timer = setInterval(() => {
+      setLoadingSeconds((seconds) => seconds + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+
+  }, [loading]);
+
+  useEffect(() => {
+
     const fetchBlogs = async () => {
+
+      setLoading(true);
+      setError("");
+      setLoadingSeconds(0);
 
       try {
 
@@ -182,13 +206,20 @@ const Blog = () => {
             err.message
         );
 
+        setError(
+          "The blog is taking longer than expected to load."
+        );
+
+      } finally {
+
+        setLoading(false);
       }
 
     };
 
     fetchBlogs();
 
-  }, []);
+  }, [retryCount]);
 
   /* =========================================================
      OPEN BLOG FROM URL
@@ -445,7 +476,27 @@ const Blog = () => {
 
         <div className="blog-page-grid">
 
-          {filteredBlogs.length > 0 ? (
+          {loading ? (
+
+            <div className="content-status" role="status">
+              <span className="loader" aria-hidden="true" />
+              <p>Loading blogs from the server... {loadingSeconds}s</p>
+            </div>
+
+          ) : error ? (
+
+            <div className="content-status" role="alert">
+              <p>{error}</p>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setRetryCount((count) => count + 1)}
+              >
+                Try Again
+              </button>
+            </div>
+
+          ) : filteredBlogs.length > 0 ? (
 
             filteredBlogs.map((blog) => (
 
