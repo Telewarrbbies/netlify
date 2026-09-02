@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route }
-from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import ScrollToTop from "./components/ScrollToTop";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
 import Projects from "./pages/Projects";
@@ -17,6 +18,7 @@ function App() {
   return (
 
     <Router>
+      <ScrollToTop />
 
       <Routes>
 
@@ -80,8 +82,22 @@ function App() {
         />
 
         <Route
+          path="/admilogin"
+          element={<Login />}
+        />
+
+        <Route
           path="/admin"
-          element={<Dashboard />}
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="*"
+          element={<div style={{ padding: "3rem 1.5rem", textAlign: "center" }}>Page not found.</div>}
         />
 
       </Routes>
