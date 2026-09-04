@@ -49,12 +49,13 @@ const ReactionBar = ({
     try {
 
       const res = await axios.patch(
-        `http://localhost:5000/api/projects/${project._id}/like`
+        `${import.meta.env.VITE_API_URL}/api/projects/${project._id}/like`
       );
 
       const updatedProject = {
         ...project,
         likes: res.data.likes,
+        dislikes: res.data.dislikes,
       };
 
       updateProject(updatedProject);
@@ -82,12 +83,13 @@ const ReactionBar = ({
     try {
 
       const res = await axios.patch(
-        `http://localhost:5000/api/projects/${project._id}/dislike`
+        `${import.meta.env.VITE_API_URL}/api/projects/${project._id}/dislike`
       );
 
       const updatedProject = {
         ...project,
         dislikes: res.data.dislikes,
+        likes: res.data.likes,
       };
 
       updateProject(updatedProject);
@@ -121,6 +123,7 @@ const ReactionBar = ({
     <div className="reaction-container">
 
       <button
+        type="button"
         className={
           reaction === "like"
             ? "reaction-icon active-like"
@@ -151,6 +154,7 @@ const ReactionBar = ({
 
 
       <button
+        type="button"
         className={
           reaction === "dislike"
             ? "reaction-icon active-dislike"

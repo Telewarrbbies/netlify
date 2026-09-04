@@ -23,6 +23,11 @@ const Dashboard = () => {
     subscribers: 0,
   });
   const [overviewLoading, setOverviewLoading] = useState(true);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+  });
+  const [passwordSaving, setPasswordSaving] = useState(false);
 
   useEffect(() => {
     const loadOverview = async () => {
@@ -36,12 +41,13 @@ const Dashboard = () => {
         ]);
 
         const projects = projectsRes.data;
+        const blogs = blogsRes.data;
 
         setOverview({
           projects: projects.length,
-          blogs: blogsRes.data.length,
-          views: projects.reduce(
-            (total, project) => total + (project.views || 0),
+          blogs: blogs.length,
+          views: [...projects, ...blogs].reduce(
+            (total, item) => total + (item.views || 0),
             0
           ),
           messages: messagesRes.data.length,
@@ -56,6 +62,29 @@ const Dashboard = () => {
 
     loadOverview();
   }, []);
+
+  const changePassword = async (event) => {
+    event.preventDefault();
+    setPasswordSaving(true);
+
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/admin/password`,
+        passwordForm,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
+      alert("Password updated successfully.");
+      setPasswordForm({ currentPassword: "", newPassword: "" });
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to update password.");
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
 
   return (
     <>
@@ -152,6 +181,40 @@ const Dashboard = () => {
                   Why Cinematic UI Feels
                   Different
                 </p>
+              </div>
+
+              <div className="story-card" style={{ marginTop: "20px" }}>
+                <h2>Change Admin Password</h2>
+                <form onSubmit={changePassword}>
+                  <input
+                    type="password"
+                    placeholder="Current password"
+                    value={passwordForm.currentPassword}
+                    onChange={(event) =>
+                      setPasswordForm((current) => ({
+                        ...current,
+                        currentPassword: event.target.value,
+                      }))
+                    }
+                    required
+                  />
+                  <input
+                    type="password"
+                    placeholder="New password (8+ characters)"
+                    value={passwordForm.newPassword}
+                    onChange={(event) =>
+                      setPasswordForm((current) => ({
+                        ...current,
+                        newPassword: event.target.value,
+                      }))
+                    }
+                    minLength={8}
+                    required
+                  />
+                  <button type="submit" disabled={passwordSaving}>
+                    {passwordSaving ? "Updating..." : "Update Password"}
+                  </button>
+                </form>
               </div>
             </>
           )}

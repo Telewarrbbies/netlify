@@ -102,7 +102,23 @@ const Projects = () => {
     const url = `${window.location.origin}/projects/${project.slug}`;
 
     try {
-      await navigator.clipboard.writeText(url);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const copied = document.execCommand("copy");
+        textArea.remove();
+
+        if (!copied) {
+          throw new Error("Copy command failed");
+        }
+      }
 
       alert("Project link copied successfully.");
     } catch (err) {

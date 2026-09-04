@@ -22,7 +22,7 @@ import { useSearchParams } from "react-router-dom";
    REACTION BAR
 ========================================================= */
 
-const ReactionBar = ({ blog, blogs, setBlogs }) => {
+const ReactionBar = ({ blog, blogs, setBlogs, onUpdated }) => {
   const [reaction, setReaction] = useState(null);
 
   const likes = blog.likes || 0;
@@ -45,13 +45,18 @@ const ReactionBar = ({ blog, blogs, setBlogs }) => {
         `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
       );
 
+      const updatedBlog = {
+        ...blog,
+        likes: res.data.likes,
+        dislikes: res.data.dislikes,
+      };
+
       setBlogs((prevBlogs) =>
         prevBlogs.map((item) =>
-          item._id === blog._id
-            ? { ...item, likes: res.data.likes }
-            : item
+          item._id === blog._id ? updatedBlog : item
         )
       );
+      onUpdated?.(updatedBlog);
       setReaction("like");
     } catch (err) {
       console.error("BLOG LIKE ERROR:", err);
@@ -70,13 +75,18 @@ const ReactionBar = ({ blog, blogs, setBlogs }) => {
         `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/dislike`
       );
 
+      const updatedBlog = {
+        ...blog,
+        likes: res.data.likes,
+        dislikes: res.data.dislikes,
+      };
+
       setBlogs((prevBlogs) =>
         prevBlogs.map((item) =>
-          item._id === blog._id
-            ? { ...item, dislikes: res.data.dislikes }
-            : item
+          item._id === blog._id ? updatedBlog : item
         )
       );
+      onUpdated?.(updatedBlog);
       setReaction("dislike");
     } catch (err) {
       console.error("BLOG DISLIKE ERROR:", err);
@@ -337,12 +347,17 @@ const Blog = () => {
      OPEN BLOG
   ========================================================= */
 
-  const openBlog = (blog) => {
+  const openBlog = async (blog) => {
+    let updatedBlog = blog;
 
-    const updatedBlog = {
-      ...blog,
-      views: (blog.views || 0) + 1,
-    };
+    try {
+      const res = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/view`
+      );
+      updatedBlog = { ...blog, views: res.data.views };
+    } catch (err) {
+      console.error("BLOG VIEW ERROR:", err);
+    }
 
     setBlogs((prevBlogs) =>
       prevBlogs.map((item) =>
@@ -371,12 +386,26 @@ const Blog = () => {
   ========================================================= */
 
   const handleShare = async () => {
+    const url = window.location.href;
 
     try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const copied = document.execCommand("copy");
+        textArea.remove();
 
-      await navigator.clipboard.writeText(
-        window.location.href
-      );
+        if (!copied) {
+          throw new Error("Copy command failed");
+        }
+      }
 
       alert("Blog link copied!");
 
@@ -541,6 +570,11 @@ const Blog = () => {
                     blog={blog}
                     blogs={blogs}
                     setBlogs={setBlogs}
+                    onUpdated={(updatedBlog) => {
+                      if (selectedBlog?._id === updatedBlog._id) {
+                        setSelectedBlog(updatedBlog);
+                      }
+                    }}
                   />
 
                 </div>
@@ -656,6 +690,7 @@ const Blog = () => {
                 blog={selectedBlog}
                 blogs={blogs}
                 setBlogs={setBlogs}
+                onUpdated={setSelectedBlog}
               />
 
               {/* =================================================
