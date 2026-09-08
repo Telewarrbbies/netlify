@@ -57,7 +57,7 @@ const RecentReel = () => {
     if (item.type === "project") {
       navigate(`/projects?projectId=${item._id}`);
     } else {
-      navigate(`/blog?id=${item._id}`);
+      navigate(`/blog/${item._id}`);
     }
   };
 

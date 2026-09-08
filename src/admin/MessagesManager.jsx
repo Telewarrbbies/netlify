@@ -76,7 +76,7 @@ const MessagesManager = () => {
               <a
                 href={`mailto:${msg.email}`}
                 style={{
-                  color: "#38bdf8",
+                  color: "#9b4dff",
                 }}
               >
                 {msg.email}

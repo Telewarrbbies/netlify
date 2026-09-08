@@ -45,7 +45,7 @@ const BlogPreview = () => {
   }, [retryCount]);
 
   const openBlog = (blogId) => {
-    navigate(`/blog?id=${blogId}`);
+    navigate(`/blog/${blogId}`);
   };
 
   return (

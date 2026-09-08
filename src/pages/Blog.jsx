@@ -14,15 +14,16 @@ import {
   FiSearch,
 } from "react-icons/fi";
 
-import { IoClose } from "react-icons/io5";
-
-import { useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 /* =========================================================
    REACTION BAR
 ========================================================= */
 
-const ReactionBar = ({ blog, blogs, setBlogs, onUpdated }) => {
+const ReactionBar = ({ blog, setBlogs, onUpdated }) => {
   const [reaction, setReaction] = useState(null);
 
   const likes = blog.likes || 0;
@@ -147,6 +148,12 @@ const ReactionBar = ({ blog, blogs, setBlogs, onUpdated }) => {
 
 const Blog = () => {
 
+  const navigate = useNavigate();
+
+  const { blogId } = useParams();
+
+  const isPostPage = Boolean(blogId);
+
   const [search, setSearch] = useState("");
 
   const [blogs, setBlogs] = useState([]);
@@ -159,13 +166,15 @@ const Blog = () => {
 
   const [selectedBlog, setSelectedBlog] = useState(null);
 
-  const [searchParams] = useSearchParams();
-
   const [commentData, setCommentData] = useState({
     name: "",
     email: "",
     comment: "",
   });
+
+  const [comments, setComments] = useState([]);
+
+  const [commentsLoading, setCommentsLoading] = useState(false);
 
   const [error, setError] = useState("");
 
@@ -237,9 +246,10 @@ const Blog = () => {
 
   useEffect(() => {
 
-    const blogId = searchParams.get("id");
-
     if (!blogId || blogs.length === 0) {
+      if (!blogId) {
+        setSelectedBlog(null);
+      }
       return;
     }
 
@@ -247,32 +257,31 @@ const Blog = () => {
       (blog) => blog._id === blogId
     );
 
-    if (foundBlog) {
-      setSelectedBlog(foundBlog);
-    }
+    setSelectedBlog(foundBlog || null);
 
-  }, [searchParams, blogs]);
-
-  /* =========================================================
-     LOCK BODY WHEN MODAL IS OPEN
-  ========================================================= */
+  }, [blogId, blogs]);
 
   useEffect(() => {
-
-    if (selectedBlog) {
-
-      document.body.style.overflow = "hidden";
-
-    } else {
-
-      document.body.style.overflow = "auto";
-
+    if (!selectedBlog) {
+      return undefined;
     }
 
-    return () => {
-      document.body.style.overflow = "auto";
+    const fetchComments = async () => {
+      setCommentsLoading(true);
+
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/blogs/${selectedBlog._id}/comments`
+        );
+        setComments(response.data);
+      } catch (err) {
+        console.error("BLOG COMMENTS ERROR:", err);
+      } finally {
+        setCommentsLoading(false);
+      }
     };
 
+    fetchComments();
   }, [selectedBlog]);
 
   /* =========================================================
@@ -301,7 +310,7 @@ const Blog = () => {
      COMMENT SUBMISSION
   ========================================================= */
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
 
     e.preventDefault();
 
@@ -333,13 +342,28 @@ const Blog = () => {
 
     setError("");
 
-    alert("Comment Submitted!");
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/blogs/${selectedBlog._id}/comments`,
+        commentData
+      );
 
-    setCommentData({
-      name: "",
-      email: "",
-      comment: "",
-    });
+      setComments((previousComments) => [
+        response.data,
+        ...previousComments,
+      ]);
+
+      setCommentData({
+        name: "",
+        email: "",
+        comment: "",
+      });
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Unable to submit your comment right now."
+      );
+    }
 
   };
 
@@ -367,17 +391,8 @@ const Blog = () => {
       )
     );
 
+    navigate(`/blog/${blog._id}`);
     setSelectedBlog(updatedBlog);
-
-  };
-
-  /* =========================================================
-     CLOSE BLOG
-  ========================================================= */
-
-  const closeBlog = () => {
-
-    setSelectedBlog(null);
 
   };
 
@@ -453,6 +468,7 @@ const Blog = () => {
 
   return (
     <>
+      {!isPostPage && (
       <section className="blog-page">
 
         {/* =================================================
@@ -604,26 +620,28 @@ const Blog = () => {
         </div>
 
       </section>
+      )}
 
-      {/* ===================================================
-          BLOG MODAL
-      =================================================== */}
+        {/* ===================================================
+          BLOG POST PAGE
+        =================================================== */}
 
       {selectedBlog && (
 
-        <div className="blog-modal-wrapper">
+        <main className="blog-post-page">
 
-          <div className="blog-modal">
+          <button
+            type="button"
+            className="blog-back-button"
+            onClick={() => navigate("/blog")}
+          >
+            Back to blog
+          </button>
 
-            {/* CLOSE BUTTON */}
-
-            <button
-              type="button"
-              className="close-modal"
-              onClick={closeBlog}
-            >
-              <IoClose />
-            </button>
+          <article
+            className="blog-post"
+            aria-labelledby="blog-post-title"
+          >
 
             {/* FEATURED IMAGE */}
 
@@ -633,21 +651,16 @@ const Blog = () => {
                 "https://via.placeholder.com/1000x600?text=No+Image"
               }
               alt={selectedBlog.title}
-              className="modal-image"
+              className="blog-post-image"
             />
 
-            {/* MODAL CONTENT */}
+            {/* ARTICLE CONTENT */}
 
-            <div
-              className="modal-content"
-              style={{
-                paddingBottom: "120px",
-              }}
-            >
+            <div className="blog-post-content">
 
               {/* DATE */}
 
-              <p className="modal-date">
+              <p className="blog-post-date">
 
                 {formatDate(
                   selectedBlog.createdAt
@@ -657,7 +670,7 @@ const Blog = () => {
 
               {/* TITLE */}
 
-              <h1>
+              <h1 id="blog-post-title">
                 {selectedBlog.title}
               </h1>
 
@@ -665,7 +678,7 @@ const Blog = () => {
 
               {selectedBlog.category && (
 
-                <p className="modal-category">
+                <p className="blog-post-category">
 
                   {selectedBlog.category}
 
@@ -676,7 +689,7 @@ const Blog = () => {
               {/* BLOG CONTENT */}
 
               <div
-                className="modal-text blog-content"
+                className="blog-post-text blog-content"
                 dangerouslySetInnerHTML={{
                   __html:
                     selectedBlog.content ||
@@ -744,8 +757,28 @@ const Blog = () => {
               <div className="comment-box">
 
                 <h3>
-                  Leave a Comment
+                  Comments ({comments.length})
                 </h3>
+
+                {commentsLoading ? (
+                  <p className="comments-status">Loading comments...</p>
+                ) : comments.length > 0 ? (
+                  <div className="comments-list">
+                    {comments.map((item) => (
+                      <article className="comment-item" key={item._id}>
+                        <strong>{item.name}</strong>
+                        <time dateTime={item.createdAt}>
+                          {formatDate(item.createdAt)}
+                        </time>
+                        <p>{item.comment}</p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="comments-status">Be the first to comment.</p>
+                )}
+
+                <h3>Leave a Comment</h3>
 
                 <form
                   onSubmit={
@@ -828,9 +861,9 @@ const Blog = () => {
 
             </div>
 
-          </div>
+          </article>
 
-        </div>
+        </main>
 
       )}
 

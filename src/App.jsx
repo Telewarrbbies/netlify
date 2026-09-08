@@ -55,6 +55,16 @@ function App() {
         />
 
         <Route
+          path="/blog/:blogId"
+          element={
+            <>
+              <Navbar />
+              <Blog />
+            </>
+          }
+        />
+
+        <Route
           path="/contact"
           element={
             <>
