@@ -33,11 +33,17 @@ const Dashboard = () => {
     const loadOverview = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
+        const adminConfig = {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        };
+
         const [projectsRes, blogsRes, messagesRes, subscribersRes] = await Promise.all([
           axios.get(`${apiUrl}/api/projects`),
           axios.get(`${apiUrl}/blogs`),
           axios.get(`${apiUrl}/api/messages`),
-          axios.get(`${apiUrl}/api/newsletter`),
+          axios.get(`${apiUrl}/api/newsletter`, adminConfig),
         ]);
 
         const projects = projectsRes.data;
