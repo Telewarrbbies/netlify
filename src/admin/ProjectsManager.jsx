@@ -336,15 +336,23 @@ const fetchProjects = async () => {
 
     }
 
-  };  return (
-    <div style={{ padding: "40px", maxWidth: "1200px", margin: "auto" }}>
-      <h1 style={{ marginBottom: "30px" }}>
-        {editingId ? "Edit Project" : "Projects Manager"}
-      </h1>
+  };
+
+  return (
+    <div className="project-manager">
+      <div className="project-manager-header">
+        <div>
+          <p className="admin-eyebrow">WORK MANAGEMENT</p>
+          <h1>{editingId ? "Edit Project" : "Projects"}</h1>
+          <span>Create, update, and organize the work shown on your portfolio.</span>
+        </div>
+        {editingId && <span className="admin-status-badge">Editing project</span>}
+      </div>
 
       {/* ================= FORM ================= */}
 
-      <div className="admin-form">
+      <div className="project-editor-layout">
+      <div className="admin-form project-form">
 
         <input
           type="text"
@@ -371,21 +379,10 @@ const fetchProjects = async () => {
         {/* Skills */}
 
         {form.category && (
-          <div
-            style={{
-              margin: "25px 0",
-            }}
-          >
+          <div className="skills-section">
             <h3>Skills Used</h3>
 
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "12px",
-                marginTop: "15px",
-              }}
-            >
+            <div className="skills-grid">
               {categories[form.category].map((skill) => (
                 <label key={skill}>
 
@@ -521,13 +518,7 @@ const fetchProjects = async () => {
           onChange={handleChange}
         />
 
-        <div
-          style={{
-            display: "flex",
-            gap: "30px",
-            marginTop: "25px",
-          }}
-        >
+        <div className="project-toggle-row">
           <label>
             <input
               type="checkbox"
@@ -551,13 +542,7 @@ const fetchProjects = async () => {
           </label>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            marginTop: "35px",
-          }}
-        >
+        <div className="project-form-actions">
           <button
             onClick={saveProject}
             disabled={loading}
@@ -577,39 +562,48 @@ const fetchProjects = async () => {
         </div>
       </div>
 
+      <aside className="project-editor-aside">
+        <div className="admin-info-card">
+          <p className="admin-eyebrow">WORKFLOW</p>
+          <h3>{editingId ? "Update this project" : "Add a project"}</h3>
+          <p>Complete the details, choose the skills, then save. Published projects appear on the public portfolio.</p>
+        </div>
+        <div className="admin-info-card">
+          <p className="admin-eyebrow">QUICK CHECK</p>
+          <ul>
+            <li>{form.title.trim() ? "Title added" : "Add a title"}</li>
+            <li>{form.category ? "Category selected" : "Choose a category"}</li>
+            <li>{form.skills.length ? `${form.skills.length} skills selected` : "Select at least one skill"}</li>
+          </ul>
+        </div>
+      </aside>
+      </div>
+
       {/* ================= PROJECT LIST ================= */}
 
       <hr style={{ margin: "60px 0" }} />
 
-      <h2>Existing Projects</h2>
+      <div className="admin-section-heading">
+        <div>
+          <p className="admin-eyebrow">PORTFOLIO CONTENT</p>
+          <h2>Existing Projects</h2>
+        </div>
+        <span>{projects.length} total</span>
+      </div>
 
       {projects.length === 0 && (
         <p>No projects yet.</p>
       )}
 
       {projects.map((project) => (
-        <div
-          key={project._id}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "10px",
-            padding: "20px",
-            marginBottom: "20px",
-          }}
-        >
+        <div key={project._id} className="project-list-card">
           <h3>{project.title}</h3>
 
           <p>{project.category}</p>
 
           <p>{project.shortDescription}</p>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "15px",
-              marginTop: "20px",
-            }}
-          >
+          <div className="project-list-actions">
             <button
               onClick={() =>
                 editProject(project)

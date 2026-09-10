@@ -102,11 +102,6 @@ const Dashboard = () => {
 
       <div
         className="admin-layout"
-        style={{
-          minHeight: "100vh",
-          background: "#0f0f0f",
-          display: "flex",
-        }}
       >
         <Sidebar
           active={active}
@@ -115,16 +110,9 @@ const Dashboard = () => {
 
         <div
           className="admin-content"
-          style={{
-            flex: 1,
-            padding: "40px",
-          }}
         >
           <div
             className="projects-header"
-            style={{
-              marginBottom: "50px",
-            }}
           >
             <p>ADMIN CONTROL CENTER</p>
 
@@ -140,13 +128,7 @@ const Dashboard = () => {
           {active === "Overview" && (
             <>
               <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit,minmax(220px,1fr))",
-                  gap: "20px",
-                  marginBottom: "40px",
-                }}
+                className="admin-overview-grid"
               >
                 <div className="story-card">
                   <h3>Total Projects</h3>
@@ -189,7 +171,7 @@ const Dashboard = () => {
                 </p>
               </div>
 
-              <div className="story-card" style={{ marginTop: "20px" }}>
+              <div className="story-card admin-password-card">
                 <h2>Change Admin Password</h2>
                 <form onSubmit={changePassword}>
                   <input
