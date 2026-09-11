@@ -1,5 +1,5 @@
 
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/Seo";
 import { useState } from "react";
 import Footer from "../components/Footer";
 
@@ -118,16 +118,12 @@ const Contact = () => {
 
   return (
     <>
-      <Helmet>
-        <title>
-          Contact | Telewarrbbies Tech Studio
-        </title>
-
-        <meta
-          name="description"
-          content="Let's work together. Reach out for collaborations and creative projects."
-        />
-      </Helmet>
+      <Seo
+        title="Contact | Telewarrbbies"
+        description="Let's work together. Reach out for collaborations, creative projects, branding, and product design opportunities."
+        path="/contact"
+        keywords="contact, freelance developer, web design collaboration, creative projects, branding, e-commerce, app development"
+      />
 
       <section className="contact-page">
 

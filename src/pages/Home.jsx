@@ -4,30 +4,19 @@ import MyStory from "../components/MyStory";
 import BlogPreview from "../components/BlogPreview";
 import Footer from "../components/Footer";
 
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/Seo";
 
 const Home = () => {
 
   return (
     <>
 
-      <Helmet>
-
-        <title>
-          TeleWarrbbies | Creative Developer, Designer & Storyteller
-        </title>
-
-        <meta
-          name="description"
-          content="
-          Creative portfolio showcasing web development,
-          graphic design, cinematic visuals,
-          storytelling, and immersive digital experiences.
-          "
-        />
-
-      </Helmet>
-
+      <Seo
+        title="Telewarrbbies | Creative Developer, Designer & Storyteller"
+        description="Creative portfolio showcasing web development, graphic design, branding, cinematic visuals, storytelling, and immersive digital experiences."
+        path="/"
+        keywords="Telewarrbbies, portfolio, web developer, creative developer, designer, branding, graphic design, video editing, storytelling, frontend development, React"
+      />
       <Hero />
 
       {/* RECENT PROJECTS */}

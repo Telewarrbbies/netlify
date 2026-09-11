@@ -1,0 +1,17 @@
+{
+  "name": "Telewarrbbies | Creative Developer, Designer & Storyteller",
+  "short_name": "Telewarrbbies",
+  "description": "Creative portfolio showcasing web development, graphic design, brand strategy, storytelling, and immersive digital experiences.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    {
+      "src": "/Blue_and_Purple_Modern_Technology_Logo__1_-removebg-preview.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

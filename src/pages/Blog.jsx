@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 import Footer from "../components/Footer";
+import Seo from "../components/Seo";
 
 import {
   AiOutlineLike,
@@ -468,6 +469,27 @@ const Blog = () => {
 
   return (
     <>
+      <Seo
+        title={
+          selectedBlog
+            ? `${selectedBlog.seoTitle || selectedBlog.title} | Telewarrbbies`
+            : "Blog | Telewarrbbies"
+        }
+        description={
+          selectedBlog?.seoDescription ||
+          selectedBlog?.excerpt ||
+          "Stories, insights, and creative notes on design, development, and digital experiences."
+        }
+        path={selectedBlog ? `/blog/${selectedBlog._id}` : "/blog"}
+        image={selectedBlog?.featuredImage}
+        type={selectedBlog ? "article" : "website"}
+        keywords={
+          selectedBlog?.seoKeywords ||
+          "blog, creative writing, design, development, storytelling, web design, digital experiences"
+        }
+        publishedTime={selectedBlog?.createdAt}
+        modifiedTime={selectedBlog?.updatedAt || selectedBlog?.createdAt}
+      />
       {!isPostPage && (
       <section className="blog-page">
 

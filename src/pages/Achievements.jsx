@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/Seo";
 import Footer from "../components/Footer";
 
 const Achievements = () => {
@@ -12,7 +12,7 @@ const Achievements = () => {
   const loadResume = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/resume"
+        `${import.meta.env.VITE_API_URL}/api/resume`
       );
 
       if (!response.ok) return;
@@ -27,16 +27,12 @@ const Achievements = () => {
 
   return (
     <>
-      <Helmet>
-        <title>
-          Achievements & Journey | Telewarrbbies Tech Studio
-        </title>
-
-        <meta
-          name="description"
-          content="Explore my professional journey, certifications, achievements and testimonials."
-        />
-      </Helmet>
+      <Seo
+        title="Achievements & Journey | Telewarrbbies"
+        description="Explore my professional journey, certifications, achievements, testimonials, and creative milestones."
+        path="/achievements"
+        keywords="achievement, journey, developer profile, portfolio milestones, creative career, certifications, testimonials, design experience"
+      />
 
       <section className="projects-page">
 
@@ -61,7 +57,7 @@ const Achievements = () => {
           >
             {resume ? (
               <a
-                href={`http://localhost:5000${resume.file}`}
+                href={`${import.meta.env.VITE_API_URL}${resume.file}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"

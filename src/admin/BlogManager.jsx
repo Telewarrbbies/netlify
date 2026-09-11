@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -8,50 +8,52 @@ import Image from "@tiptap/extension-image";
 import Youtube from "@tiptap/extension-youtube";
 
 const BlogManager = () => {
-const [blogs, setBlogs] = useState([]);
-const [isPublishing, setIsPublishing] = useState(false);
+  const [blogs, setBlogs] = useState([]);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const fileInputRef = useRef(null);
 
-const [formData, setFormData] = useState({
-title: "",
-slug: "",
-category: "Web Dev",
-featuredImage: "",
-excerpt: "",
-seoTitle: "",
-seoDescription: "",
-seoKeywords: "",
-images: [],
-});
+  const [formData, setFormData] = useState({
+    title: "",
+    slug: "",
+    category: "Web Dev",
+    featuredImage: "",
+    excerpt: "",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
+    images: [],
+  });
 
-/* ================= EDITOR ================= */
+  /* ================= EDITOR ================= */
 
-const editor = useEditor({
-extensions: [
-StarterKit.configure({
-heading: {
-levels: [1, 2, 3],
-},
-}),
-Link.configure({
-openOnClick: false,
-autolink: true,
-linkOnPaste: true,
-}),
-Image,
-Youtube.configure({
-controls: true,
-nocookie: true,
-width: 640,
-height: 360,
-}),
-],
-content: "<p>Start writing your blog post here...</p>",
-editorProps: {
-attributes: {
-class: "tiptap-editor",
-},
-},
-});
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
+      }),
+      Image,
+      Youtube.configure({
+        controls: true,
+        nocookie: true,
+        width: 640,
+        height: 360,
+      }),
+    ],
+    content: "<p>Start writing your blog post here...</p>",
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        class: "tiptap-editor",
+      },
+    },
+  });
 
 /* ================= LOAD BLOGS ================= */
 
@@ -94,66 +96,90 @@ seoTitle: value,
 /* ================= IMAGE UPLOAD ================= */
 
 const handleImageChange = (e) => {
-setFormData((prev) => ({
-...prev,
-images: Array.from(e.target.files),
-}));
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  setFormData((prev) => ({
+    ...prev,
+    images: [...prev.images, ...files],
+  }));
+};
+
+const handleEditorImageUpload = (event) => {
+  const files = Array.from(event.target.files || []);
+  if (!files.length || !editor) return;
+
+  files.forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      editor.chain().focus().setImage({
+        src: reader.result,
+        alt: file.name,
+      }).run();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  setFormData((prev) => ({
+    ...prev,
+    images: [...prev.images, ...files],
+  }));
+
+  event.target.value = "";
 };
 
 /* ================= INSERT IMAGE URL ================= */
 
 const insertImage = () => {
-const url = prompt("Paste the image URL:");
-if (!url) return;
+  const url = prompt("Paste the image URL:");
+  if (!url) return;
 
-editor
-?.chain()
-.focus()
-.setImage({
-src: url,
-})
-.run();
+  editor
+    ?.chain()
+    .focus()
+    .setImage({
+      src: url,
+      alt: "Blog image",
+    })
+    .run();
 };
 
 /* ================= INSERT YOUTUBE ================= */
 
 const insertYoutube = () => {
-const url = prompt("Paste the YouTube URL:");
-if (!url) return;
+  const url = prompt("Paste the YouTube URL:");
+  if (!url) return;
 
-editor
-?.commands
-.setYoutubeVideo({
-src: url,
-});
+  editor?.chain().focus().setYoutubeVideo({ src: url }).run();
 };
 
 /* ================= INSERT LINK ================= */
 
 const insertLink = () => {
-const url = prompt("Enter the link URL:");
-if (!url) return;
+  const url = prompt("Enter the link URL:");
+  if (!url) return;
 
-const text = prompt("What text should readers click?", "Read more");
-if (!text) return;
+  const text = prompt("What text should readers click?", "Read more");
+  if (!text) return;
 
-editor
-?.chain()
-.focus()
-.insertContent({
-type: "text",
-text,
-marks: [
-{
-type: "link",
-attrs: {
-href: url,
-target: "_blank",
-},
-},
-],
-})
-.run();
+  editor
+    ?.chain()
+    .focus()
+    .insertContent({
+      type: "text",
+      text,
+      marks: [
+        {
+          type: "link",
+          attrs: {
+            href: url,
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+        },
+      ],
+    })
+    .run();
 };
 
 /* ================= PUBLISH BLOG ================= */
@@ -367,6 +393,23 @@ return (
         {/* ================= TOOLBAR ================= */}
 
         <div className="editor-toolbar">
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            title="Upload local image"
+          >
+            🖼 Upload
+          </button>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={handleEditorImageUpload}
+          />
 
           <button
             type="button"
@@ -601,6 +644,14 @@ return (
           accept="image/*"
           onChange={handleImageChange}
         />
+
+        <button
+          type="button"
+          className="secondary-action"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          Insert image in editor
+        </button>
 
         {formData.images.length > 0 && (
 

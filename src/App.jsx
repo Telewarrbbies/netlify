@@ -13,11 +13,9 @@ import Achievements from "./pages/Achievements";
 import Login from "./admin/Login";
 import Dashboard from "./admin/Dashboard";
 
-function App() {
-
+export function AppRoutes() {
   return (
-
-    <Router>
+    <>
       <ScrollToTop />
 
       <Routes>
@@ -112,10 +110,16 @@ function App() {
 
       </Routes>
 
-    </Router>
-
+    </>
   );
+}
 
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
+  );
 }
 
 export default App;

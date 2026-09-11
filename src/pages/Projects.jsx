@@ -5,6 +5,7 @@ import { FiEye, FiShare2 } from "react-icons/fi";
 
 import Footer from "../components/Footer";
 import ReactionBar from "../components/ReactionBar";
+import Seo from "../components/Seo";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -129,6 +130,12 @@ const Projects = () => {
 
   return (
     <>
+      <Seo
+        title="Projects | Telewarrbbies"
+        description="Explore web development, graphic design, branding, and video editing projects by Telewarrbbies."
+        path="/projects"
+        keywords="projects, web development, graphic design, branding, video editing, creative portfolio, case studies, React apps, digital experiences"
+      />
       <section className="projects-page">
 
         {/* ================= HEADER ================= */}
