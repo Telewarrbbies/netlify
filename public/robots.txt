@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /adminlogin
 Disallow: /admilogin
 
-Sitemap: https://telewarrbbies.com/sitemap.xml
+Sitemap: https://netlify-eight-zeta.vercel.app/sitemap.xml

@@ -1,10 +1,11 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = (import.meta.env.VITE_SITE_URL || "https://telewarrbbies.com").replace(/\/$/, "");
+const SITE_URL = (import.meta.env.VITE_SITE_URL || "https://netlify-eight-zeta.vercel.app").replace(/\/$/, "");
 const DEFAULT_IMAGE = "/Blue_and_Purple_Modern_Technology_Logo__1_-removebg-preview.png";
 const DEFAULT_TITLE = "Telewarrbbies | Creative Developer, Designer & Storyteller";
 const DEFAULT_DESCRIPTION =
   "Creative portfolio showcasing web development, graphic design, branding, cinematic visuals, storytelling, and immersive digital experiences.";
+const GOOGLE_SITE_VERIFICATION = import.meta.env.VITE_GOOGLE_SITE_VERIFICATION;
 
 const Seo = ({
   title = DEFAULT_TITLE,
@@ -76,6 +77,9 @@ const Seo = ({
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <meta name="googlebot" content="index, follow" />
       <meta name="bingbot" content="index, follow" />
+      {GOOGLE_SITE_VERIFICATION && (
+        <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
+      )}
       <meta name="language" content="en" />
       <meta name="theme-color" content="#050505" />
       <meta name="color-scheme" content="dark light" />
@@ -88,6 +92,7 @@ const Seo = ({
       <meta property="og:image:alt" content={title} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
+      <meta property="og:image:type" content="image/png" />
       <meta property="og:locale" content="en_US" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@telewarrbbies" />
@@ -96,6 +101,7 @@ const Seo = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
       <meta name="twitter:image:alt" content={title} />
+      <meta name="twitter:url" content={canonicalUrl} />
       <link rel="canonical" href={canonicalUrl} />
       <link rel="alternate" hrefLang="en" href={canonicalUrl} />
       <script
