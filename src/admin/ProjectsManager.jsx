@@ -60,6 +60,7 @@ const emptyForm = {
   fullDescription: "",
 
   coverImage: "",
+  galleryImages: ["", "", "", ""],
 
   github: "",
   liveDemo: "",
@@ -169,6 +170,18 @@ const fetchProjects = async () => {
 
     setForm(emptyForm);
   };
+
+  const handleGalleryImageChange = (index, value) => {
+    setForm((prev) => {
+      const galleryImages = [...(prev.galleryImages || ["", "", "", ""])];
+      galleryImages[index] = value;
+
+      return {
+        ...prev,
+        galleryImages,
+      };
+    });
+  };
     /* ================= SAVE PROJECT ================= */
 
   const saveProject = async () => {
@@ -192,6 +205,11 @@ const fetchProjects = async () => {
       const payload = {
 
         ...form,
+
+        galleryImages: (form.galleryImages || [])
+          .map((item) => String(item).trim())
+          .filter(Boolean)
+          .slice(0, 4),
 
         seoKeywords: form.seoKeywords
           .split(",")
@@ -247,6 +265,12 @@ const fetchProjects = async () => {
 
     setEditingId(project._id);
 
+    const gallery = Array.isArray(project.galleryImages) && project.galleryImages.length
+      ? project.galleryImages
+      : Array.isArray(project.images)
+        ? project.images
+        : [];
+
     setForm({
 
       title: project.title || "",
@@ -263,6 +287,8 @@ const fetchProjects = async () => {
 
       coverImage:
         project.coverImage || "",
+
+      galleryImages: Array.from({ length: 4 }, (_, index) => gallery[index] || ""),
 
       github:
         project.github || "",
@@ -441,6 +467,21 @@ const fetchProjects = async () => {
             }}
           />
         )}
+
+        <div style={{ marginTop: "20px" }}>
+          <h3 style={{ marginBottom: "12px" }}>Project Gallery (up to 4 extra images)</h3>
+
+          {Array.from({ length: 4 }, (_, index) => (
+            <div key={`gallery-image-${index}`} style={{ marginBottom: "10px" }}>
+              <input
+                type="url"
+                placeholder={`Gallery Image ${index + 1} URL`}
+                value={form.galleryImages[index] || ""}
+                onChange={(e) => handleGalleryImageChange(index, e.target.value)}
+              />
+            </div>
+          ))}
+        </div>
 
         <input
           type="text"

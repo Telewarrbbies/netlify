@@ -51,6 +51,14 @@ const Projects = () => {
           (project) => project.category === active
         );
 
+  const getProjectCover = (project) => {
+    if (project.coverImage) return project.coverImage;
+    const gallery = Array.isArray(project.galleryImages)
+      ? project.galleryImages.filter(Boolean)
+      : [];
+    return gallery[0] || "";
+  };
+
   /* ================= BODY LOCK ================= */
 
   useEffect(() => {
@@ -182,7 +190,7 @@ const Projects = () => {
             >
 
               <img
-                src={project.coverImage}
+                src={getProjectCover(project)}
                 alt={project.title}
               />
 
@@ -265,10 +273,25 @@ const Projects = () => {
             </button>
 
             <img
-              src={selectedProject.coverImage}
+              src={getProjectCover(selectedProject)}
               alt={selectedProject.title}
               className="project-modal-image"
             />
+
+            {Array.isArray(selectedProject.galleryImages) && selectedProject.galleryImages.filter(Boolean).length > 0 && (
+              <div className="project-gallery">
+                {selectedProject.galleryImages
+                  .filter(Boolean)
+                  .slice(0, 4)
+                  .map((image, index) => (
+                    <img
+                      key={`${selectedProject._id}-gallery-${index}`}
+                      src={image}
+                      alt={`${selectedProject.title} project gallery ${index + 1}`}
+                    />
+                  ))}
+              </div>
+            )}
 
             <div className="project-modal-content">
 
